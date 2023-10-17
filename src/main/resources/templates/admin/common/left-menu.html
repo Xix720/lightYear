@@ -1,0 +1,36 @@
+<aside class="lyear-layout-sidebar" style="opacity: 0.85">
+
+    <!-- logo -->
+    <div id="logo" class="sidebar-header">
+        <a href="index.html"><img src="/images/logo-sidebar.png" title="LightYear" alt="LightYear" /></a>
+    </div>
+    <div class="lyear-layout-sidebar-scroll">
+
+        <nav class="sidebar-main">
+            <ul class="nav nav-drawer">
+                <li class="nav-item active"> <a href="/system/index"><i class="mdi mdi-home"></i> 后台首页</a> </li>
+<!--                判断 session中token和application中的token是否一致-->
+                <li class="nav-item nav-item-has-subnav open" th:each=" menuLevel1 : ${#session.getAttribute('menuLevel1')}">
+                    <i class="mdi" th:classappend="${menuLevel1.icon}"
+                       style="display:block;float:left;margin-left: 23px;margin-top: 14px;"></i>
+                    <a href="javascript:void(0)" th:text="${menuLevel1.name}">
+                            menulevel1</a>
+                    <ul class="nav nav-subnav">
+                        <li th:each="menuLevel2 : ${#session.getAttribute('menuLevel2')}" th:if="${menuLevel1.id == menuLevel2.parentId}">
+                            <i class="mdi" th:classappend="${menuLevel2.icon}"
+                               style="display:block;float:left;margin-left: 29px;margin-top: 10px;"></i>
+                            <a th:href="${menuLevel2.url}" th:text="${menuLevel2.name}">
+                                menulevel2</a>
+                        </li>
+                    </ul>
+                </li>
+
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <p class="copyright">Copyright &copy; 2019. All rights reserved. More Templates 更多模板：<a href="http://www.mycodes.net/" target="_blank">源码之家</a></p>
+        </div>
+    </div>
+
+</aside>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>编辑用户信息 - 光年(Light Year Admin)后台管理系统模板</title>
+    <template th:replace="/admin/common/header"/>
+    <style>
+        .accountinfo {
+            float: left;
+        }
+
+        .headpic {
+
+        }
+
+        #basicinfo {
+            height: 220px;
+        }
+    </style>
+</head>
+
+<body style="background-image: url('/images/homebackground4.jpg'); background-size: cover;">
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+        <!--左侧导航-->
+        <template th:replace="/admin/common/left-menu"/>
+        <!--End 左侧导航-->
+
+        <!--头部信息-->
+        <template th:replace="/admin/common/header-info"/>
+        <!--End 头部信息-->
+
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+
+            <div class="container-fluid">
+
+                <div class="row">
+                    <div class="col-lg-12" style="float: left;width: 30%;">
+                        <div class="card">
+                            <div class="card-header bg-primary">
+                                <h4>账号信息</h4>
+                                <ul class="card-actions">
+                                    <li>
+                                        <button type="button"><i class="mdi mdi-more"></i></button>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <br>
+                                账号id：<p th:text="${userinfo.id}" id="user_id"></p>
+                                账号权限：<p th:text="${userinfo.roleId}==4?'普通用户':'管理员'" id="role_id"></p>
+                                创建时间：<p th:text="${userinfo.createTime}" id="createtime"></p>
+                                更新时间：<p th:text="${userinfo.updateTime}" id="updatetime"></p>
+                                帐号状态：<p th:text="${userinfo.status}==1?'已启用':'未启用'" id="status"></p>
+                                <input th:value="${userinfo.password}" type="password" id="password"
+                                       style="visibility:hidden"/>
+                                <div class="edit-avatar">
+                                    <img th:src="@{/images/users/{filename}(filename=${userinfo.headPic})}"
+                                         width="100px" id="headpic">
+                                    <div class="avatar-divider"></div>
+                                    <div class="edit-avatar-content" style="margin-top: 30px">
+                                        <button class="btn btn-default" id="uploadPic" disabled>上传头像</button>
+                                        <!--                                        设置文件上隐藏域-->
+                                        <input type="file" ref="file" style="display: none" id="file"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12" style="float: left;width: 70%;">
+                        <div class="card">
+                            <div class="card-header bg-cyan">
+                                <h4>详细资料</h4>
+                                <ul class="card-actions">
+                                    <li>
+                                        <button type="button"><i class="mdi mdi-more"></i></button>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <form method="post" action="/user/edit" class="site-form">
+                                    <div class="form-group">
+                                        <label for="username">用户名</label>
+                                        <input type="text" class="form-control" name="username" id="username"
+                                               th:value="${userinfo.username}" disabled="disabled"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="phone">联系电话</label>
+                                        <input type="text" class="form-control" name="phone" id="phone" placeholder="输入您的电话"
+                                               th:value="${userinfo.mobile}" disabled="disabled">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="email">邮箱</label>
+                                        <input type="email" class="form-control" name="email" id="email"
+                                               aria-describedby="emailHelp" placeholder="请输入邮箱地址"
+                                               th:value="${userinfo.email}" disabled="disabled">
+                                    </div>
+                                    <div class="example-box">
+                                        <label for="sex">性别</label>
+                                        <input type="text" class="form-control" name="sex" id="sex"
+                                               aria-describedby="emailHelp" placeholder="请输入性别"
+                                               th:value="${userinfo.sex}==1?'男':'女'" disabled="disabled">
+                                    </div>
+                                    <br>
+                                    <button type="button" class="btn btn-primary" id="change">修改</button>
+                                    <input type="button" id="submit-btn" class="btn btn-primary" value="保存"
+                                           disabled="disabled" />
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+<template th:replace="/admin/common/footer"/>
+<script type="text/javascript" src="/js/main.min.js"></script>
+
+<script type="text/javascript" src="/js/chosen.jquery.min.js"></script>
+<script>
+    //点击修改按钮
+    $('#change').on('click', function () {
+        $('input[disabled]').attr("disabled", false);
+        $('button[disabled]').attr("disabled", false);
+        $(this).attr("disabled", true);
+    })
+    //上传图片
+    $('#uploadPic').on('click', function () {
+        $('#file').click();
+    })
+    //显示图片
+    $("#file").on('change', function () {
+        var objUrl = getObjectURL(this.files[0]) ;
+        if (objUrl) {
+            $("#headpic").attr("src", objUrl);
+        }
+
+    });
+
+    //获取图片路径
+    function getObjectURL(file) {
+        var url = null;
+        if (window.createObjectURL != undefined) { // basic
+            url = window.createObjectURL(file);
+        } else if (window.URL != undefined) { // mozilla(firefox)
+            url = window.URL.createObjectURL(file);
+        } else if (window.webkitURL != undefined) { // webkit or chrome
+            url = window.webkitURL.createObjectURL(file);
+        }
+        return url;
+    }
+
+
+    //点击保存按钮
+    $('#submit-btn').on('click', function () {
+        var userid = parseInt($('#user_id').text());
+        var username = $('#username').val();
+        var phone = $('#phone').val();
+        var email = $('#email').val();
+        var sex = $('#sex').val()=='男'?1:2;
+        var json={
+            "id": userid,
+            "email": email,
+            "mobile": phone,
+            "username": username,
+            "sex":sex
+        };
+        var stringjson = JSON.stringify(json);
+        console.log(json);
+        console.log(stringjson);
+
+        //首先保存头像信息
+        var file = $("#file")[0].files[0];
+        if (file){
+            var formData = new FormData();
+            formData.append('file', file);
+            $.ajax({
+                url: "/user/uploadPic",
+                type: "post",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (res) {
+                    console.log(JSON.stringify(res));
+                }
+            })
+        }
+
+        //然后再保存用户信息
+        $.ajax({
+            url: '/user/edit',
+            type: 'POST',
+            data: stringjson,
+            contentType:'application/json;charset=utf-8',
+            success: function (data) {
+                showSuccessMsg('保存成功!',function() {
+                    window.location.href = '/user/list';
+                })
+            },
+            error: function (error) {
+                alert("获取用户id失败");
+                console.log(error);
+            }
+        });
+
+    })
+</script>
+</body>
+</html>

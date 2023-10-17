@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>用户管理 - 光年(Light Year Admin)后台管理系统模板</title>
+    <template th:replace="/admin/common/header"/>
+</head>
+
+<body style="background-image: url('/images/homebackground4.jpg'); background-size: cover;">
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+        <!--左侧导航-->
+        <template th:replace="/admin/common/left-menu" />
+        <!--End 左侧导航-->
+
+        <!--头部信息-->
+        <template th:replace="/admin/common/header-info"/>
+        <!--End 头部信息-->
+
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+            <div class="container-fluid">
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-toolbar clearfix">
+                                <form class="pull-right search-bar" method="get" action="#!" role="form">
+                                    <div class="input-group">
+                                        <div class="input-group-btn">
+                                            <input type="hidden" name="search_field" id="search-field" value="title">
+                                            <button class="btn btn-default dropdown-toggle" id="search-btn" data-toggle="dropdown" type="button" aria-haspopup="true" aria-expanded="false">
+                                                名称 <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li> <a tabindex="-1" href="javascript:void(0)" data-field="title">名称</a> </li>
+                                            </ul>
+                                        </div>
+                                        <input type="text" class="form-control" value="" name="keyword" onblur="searchByKeyword()" placeholder="请输入名称">
+                                    </div>
+                                </form>
+
+                            </div>
+                            <div class="card-body">
+
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <th>编号</th>
+                                            <th>头像</th>
+                                            <th>用户名</th>
+                                            <th>用户类别</th>
+                                            <th>帐号状态</th>
+                                            <th>操作</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="user , stat : ${userPage.records}">
+                                            <td th:text="${user.id}" id="userid">编号</td>
+                                            <td>
+                                                <img th:src="@{/images/users/{filename}(filename=${user.headPic})}" width="45px">
+                                            </td>
+                                            <td th:text="${user.username}"></td>
+                                            <td th:text="${user.roleId==4?'测试角色':'管理员'}"></td>
+                                            <td th:text="${user.status==1?'已启用':'未启用'}"></td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <a class="btn btn-xs btn-default"  title="添加到黑名单"th:onclick="'showDelConfirmDialog('+${user.id}+',addSubmit)'" data-toggle="tooltip"><i class="mdi mdi-check"></i></a>
+<!--                                                    <a class="btn btn-xs btn-default" title="删除" th:onclick="'showDelConfirmDialog('+${user.id}+',delSubmit)'" data-toggle="tooltip" id="delete"><i class="mdi mdi-window-close"></i></a>-->
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <ul class="pagination">
+
+                                </ul>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+
+<template th:replace="/admin/common/footer"/>
+
+<script type="text/javascript" src="/js/main.min.js"></script>
+<script type="text/javascript"></script>
+<script th:inline="javascript">
+    let userpage = /*[[${userPage}]]*/ ;
+    let current = userpage.current;
+    let pages = userpage.pages;
+    let records = userpage.records;
+    console.log(userpage);
+
+    if(current == 1){
+        $(".pagination").append("<li class='disabled'><span>«</span></li>");
+    }
+    else{
+        $(".pagination").append("<li><a href='/friend/list?current="+(current-1)+"'>«</a></li>");
+    }
+
+    if (pages<=10 || current < 7){
+        for (i = 1; i <= pages; i++) {
+            if(i>7 && i< pages-2) {
+                $(".pagination").append("<li><span>...</span></li>");
+                i = pages - 2;
+                continue;
+            }
+            if (current == i) {
+                $(".pagination").append("<li class='active'><a href='/friend/list?current=" + i + "'>" + i + "</a></li>");
+                continue;
+            }
+            $(".pagination").append("<li><a href='/friend/list?current=" + i + "'>" + i + "</a></li>");
+        }
+    }else if(current >= pages-9){
+        for (i = pages-9; i <= pages; i++) {
+            if (current == i) {
+                $(".pagination").append("<li class='active'><a href='/friend/list?current=" + i + "'>" + i + "</a></li>");
+                continue;
+            }
+            $(".pagination").append("<li><a href='/friend/list?current=" + i + "'>" + i + "</a></li>");
+        }
+    }else{
+        for (i = current-5; i <= current+1; i++) {
+            if (current == i) {
+                $(".pagination").append("<li class='active'><a href='/friend/list?current=" + i + "'>" + i + "</a></li>");
+                continue;
+            }
+            $(".pagination").append("<li><a href='/friend/list?current=" + i + "'>" + i + "</a></li>");
+        }
+        $(".pagination").append("<li><span>...</span></li>");
+        $(".pagination").append("<li><a href='/friend/list?current=" + (pages-1) + "'>" + (pages-1) + "</a></li>");
+        $(".pagination").append("<li><a href='/friend/list?current=" + pages + "'>" + pages + "</a></li>");
+    }
+
+    if(current == pages){
+        $(".pagination").append("<li class='disabled'><span>»</span></li>");
+    }
+    else{
+        $(".pagination").append("<li><a href='/friend/list?current="+(current+1)+"'>»</a></li>");
+    }
+
+
+    //添加对应id的用户
+    function addSubmit(id){
+        $.ajax({
+            url:'/friend/add',
+            type:'POST',
+            data:{"friendId":id},
+            dataType:'json',
+            success:function(data){
+                if(data.code == 0){
+                    showSuccessMsg('添加成功!',function(){
+                        window.location.href = '/friend/list';
+                    })
+                }else{
+                    showErrorMsg(data.msg);
+                }
+            },
+            error:function(data){
+                alert('未知错误!');
+            }
+        });
+    }
+
+    
+
+
+</script>
+</body>
+</html>

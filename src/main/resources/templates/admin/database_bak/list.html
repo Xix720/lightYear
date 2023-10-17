@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>用户管理 - 光年(Light Year Admin)后台管理系统模板</title>
+    <template th:replace="/admin/common/header"/>
+</head>
+
+<body style="background-image: url('/images/homebackground4.jpg'); background-size: cover;">
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+        <!--左侧导航-->
+        <template th:replace="/admin/common/left-menu" />
+        <!--End 左侧导航-->
+
+        <!--头部信息-->
+        <template th:replace="/admin/common/header-info"/>
+        <!--End 头部信息-->
+
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+            <div class="container-fluid">
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-toolbar clearfix">
+                                <form class="pull-right search-bar" method="get" action="#!" role="form">
+                                    <div class="input-group">
+                                        <div class="input-group-btn">
+                                            <input type="hidden" name="search_field" id="search-field" value="title">
+                                            <button class="btn btn-default dropdown-toggle" id="search-btn" data-toggle="dropdown" type="button" aria-haspopup="true" aria-expanded="false">
+                                                名称 <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li> <a tabindex="-1" href="javascript:void(0)" data-field="title">名称</a> </li>
+                                            </ul>
+                                        </div>
+                                        <input type="text" class="form-control" value="" name="keyword" placeholder="请输入名称">
+                                    </div>
+                                </form>
+                                <div class="toolbar-btn-action">
+                                    <a class="btn btn-primary m-r-5" href="/database_bak/add" id="backup"><i class="mdi mdi-plus"></i> 新备份</a>
+                                </div>
+                            </div>
+                            <div class="card-body">
+
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <th>编号</th>
+                                            <th>备份时间</th>
+                                            <th>更新时间</th>
+                                            <th>文件名</th>
+                                            <th>路径</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr th:each="Databasebak , stat : ${DatabaseBakPage.records}">
+                                            <td th:text="${Databasebak.id}" id="userid">编号</td>
+                                            <td th:text="${Databasebak.createTime}"></td>
+                                            <td th:text="${Databasebak.getUpdateTime()}"></td>
+                                            <td th:text="${Databasebak.getFilename()}"></td>
+                                            <td th:text="${Databasebak.getFilepath()}"></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <ul class="pagination">
+
+                                </ul>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+
+<template th:replace="/admin/common/footer"/>
+<script type="text/javascript" src="/js/main.min.js"></script>
+<script type="text/javascript"></script>
+<script th:inline="javascript">
+    let databaseBakPage = /*[[${DatabaseBakPage}]]*/ ;
+    let current = databaseBakPage.current;
+    let pages = databaseBakPage.pages;
+    let records = databaseBakPage.records;
+
+    if(current == 1){
+        $(".pagination").append("<li class='disabled'><span>«</span></li>");
+    }
+    else{
+        $(".pagination").append("<li><a href='/database_bak/list?current="+(current-1)+"'>«</a></li>");
+    }
+
+    if (pages<=10 || current < 7){
+        for (i = 1; i <= pages; i++) {
+            if(i>7 && i< pages-2) {
+                $(".pagination").append("<li><span>...</span></li>");
+                i = pages - 2;
+                continue;
+            }
+            if (current == i) {
+                $(".pagination").append("<li class='active'><a href='/database_bak/list?current=" + i + "'>" + i + "</a></li>");
+                continue;
+            }
+            $(".pagination").append("<li><a href='/database_bak/list?current=" + i + "'>" + i + "</a></li>");
+        }
+    }else if(current >= pages-9){
+        for (i = pages-9; i <= pages; i++) {
+            if (current == i) {
+                $(".pagination").append("<li class='active'><a href='/user/list?current=" + i + "'>" + i + "</a></li>");
+                continue;
+            }
+            $(".pagination").append("<li><a href='/database_bak/list?current=" + i + "'>" + i + "</a></li>");
+        }
+    }else{
+        for (i = current-5; i <= current+1; i++) {
+            if (current == i) {
+                $(".pagination").append("<li class='active'><a href='/user/list?current=" + i + "'>" + i + "</a></li>");
+                continue;
+            }
+            $(".pagination").append("<li><a href='/database_bak/list?current=" + i + "'>" + i + "</a></li>");
+        }
+        $(".pagination").append("<li><span>...</span></li>");
+        $(".pagination").append("<li><a href='/database_bak/list?current=" + (pages-1) + "'>" + (pages-1) + "</a></li>");
+        $(".pagination").append("<li><a href='/database_bak/list?current=" + pages + "'>" + pages + "</a></li>");
+    }
+
+    if(current == pages){
+        $(".pagination").append("<li class='disabled'><span>»</span></li>");
+    }
+    else{
+        $(".pagination").append("<li><a href='/database_bak/list?current="+(current+1)+"'>»</a></li>");
+    }
+
+
+
+
+</script>
+</body>
+</html>

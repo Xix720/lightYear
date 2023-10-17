@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.springbootplus.mapper.UserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.example.springbootplus.entity.User">
+        <id column="id" property="id"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="email" property="email"/>
+        <result column="head_Pic" property="headPic"/>
+        <result column="mobile" property="mobile"/>
+        <result column="password" property="password"/>
+        <result column="sex" property="sex"/>
+        <result column="status" property="status"/>
+        <result column="username" property="username"/>
+        <result column="role_Id" property="roleId"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, create_time, update_time, email , headpic , mobile , password , sex ,
+        status , roleId
+    </sql>
+
+    <update id="update" parameterType="com.example.springbootplus.entity.User">
+        update user set username=#{username},mobile=#{mobile},email=#{email},head_pic=#{headPic},sex=#{sex} where id=#{id};
+    </update>
+
+    <select id="findById" parameterType="long" resultMap="BaseResultMap">
+        select * from user where id=#{id};
+    </select>
+
+    <insert id="newuser" parameterType="com.example.springbootplus.entity.User">
+        insert into user values (#{id},#{createTime},#{updateTime},#{email},#{headPic},
+        #{mobile},#{password},#{sex},#{status},#{username},#{roleId})
+    </insert>
+
+    <select id="maxid" resultType="Integer">
+        select max(id) from user;
+    </select>
+
+    <select id="findByName" parameterType="String" resultMap="BaseResultMap">
+        select * from user where username=#{username};
+    </select>
+
+    <select id="fuzzySearch" parameterType="String" resultMap="BaseResultMap">
+        select * from user where username like concat('%',#{username},'%');
+    </select>
+
+    <select id="getUserListByRoleId"  parameterType="long" resultMap="BaseResultMap">
+        select * from user where role_id = #{id};
+    </select>
+
+</mapper>

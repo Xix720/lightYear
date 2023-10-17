@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.springbootplus.mapper.DatabaseBakMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.example.springbootplus.entity.DatabaseBak">
+        <id column="id" property="id" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="filename" property="filename" />
+        <result column="filepath" property="filepath" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, create_time, update_time, filename, filepath
+    </sql>
+
+    <!-- 查询所有 -->
+    <select id="selectAll" parameterType="com.example.springbootplus.entity.DatabaseBak" resultMap="BaseResultMap">
+        select * from database_bak;
+    </select>
+
+    <!-- 查询单个 -->
+    <select id="getByFileName" parameterType="String" resultMap="BaseResultMap">
+        select * from database_bak where filename = #{filename};
+    </select>
+
+    <delete id="deleteById" parameterType="Long">
+        delete from database_bak where id = #{id};
+    </delete>
+
+    <select id="maxId" resultType="Long">
+        select max(id) from database_bak;
+    </select>
+
+
+    <insert id="insert" parameterType="com.example.springbootplus.entity.DatabaseBak">
+        insert into database_bak(id, create_time, update_time, filename, filepath) values(#{id}, #{createTime}, #{updateTime}, #{filename}, #{filepath});
+    </insert>
+
+
+
+</mapper>

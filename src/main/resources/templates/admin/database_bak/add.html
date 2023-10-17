@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>新建备份 - 光年(Light Year Admin)后台管理系统模板</title>
+    <template th:replace="/admin/common/header"/>
+</head>
+
+<body style="background-image: url('/images/homebackground4.jpg'); background-size: cover;">
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+        <!--左侧导航-->
+        <template th:replace="/admin/common/left-menu"/>
+        <!--End 左侧导航-->
+
+        <!--头部信息-->
+        <template th:replace="/admin/common/header-info"/>
+        <!--End 头部信息-->
+
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+
+            <div class="container-fluid">
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header"><h4>输入备份信息</h4></div>
+                            <div class="card-body">
+                                <form class="form-horizontal" action="/user/add" method="post"
+                                      enctype="multipart/form-data" onsubmit="return false;">
+                                    <!--                                    输入文件名-->
+                                    <div class="form-group">
+                                        <label class="col-xs-12" for="example-name-input">文件名</label>
+                                        <div class="col-xs-12">
+                                            <input class="form-control" type="text" id="example-name-input"
+                                                   name="example-text-input" placeholder="请输入文件名">
+                                        </div>
+                                    </div>
+                                    <!--                                    输入文件路径-->
+                                    <div class="form-group">
+                                        <label class="col-xs-12" for="example-url-input">保存路径</label>
+                                        <div class="col-xs-12">
+                                            <input class="form-control" type="email" id="example-url-input"
+                                                   name="example-url-input" placeholder="请输入路径" value="D:/backup/">
+                                        </div>
+                                    </div>
+
+                                    <br>
+                                    <input type="button" id="backup" class="btn btn-primary" value="开始备份"/>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+
+<template th:replace="/admin/common/footer"/>
+<script type="text/javascript" src="/js/main.min.js"></script>
+<script type="text/javascript" src="/js/chosen.jquery.min.js"></script>
+<script type="text/javascript">
+
+
+    //提交按钮监听事件
+
+    $('#backup').click(function () {
+        lightyear.loading('show');
+        //获取文件名
+        var fileName = $('input[name="example-text-input"]').val();
+        //获取路径
+        var path = $('input[name="example-url-input"]').val();
+
+        //传输数据
+        $.ajax({
+            url: '/database_bak/add',
+            type: 'post',
+            data: {
+                fileName: fileName,
+                path: path
+            },
+            success: function (data) {
+                if (data.code == 0) {
+                    //显示加载动画0.5秒
+                    setTimeout(function () {
+                        lightyear.loading('hide');
+                    }, 1000);
+                    lightyear.notify('修改成功，页面即将自动跳转~', 'success', 5000, 'mdi mdi-emoticon-happy', 'top', 'center');
+                    //1s后跳转到数据备份页面
+                    setTimeout(function () {
+                        window.location.href = '/database_bak/list';
+                    }, 1000);
+
+                } else {
+                    //显示加载动画0.5秒
+                    setTimeout(function () {
+                        lightyear.loading('hide');
+                        lightyear.notify('备份失败', 'danger', 5000);
+                    }, 500);
+
+                }
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="GB2312" ?>
+<StudentSet>
+    <student id="001" sex="男" birth="2000.1.1">
+        <Sno>001</Sno>
+        <Sname>张三</Sname>
+        <SClass>0001</SClass>
+    </student>
+
+    <student id="002" sex="男" birth="2000.1.1">
+        <Sno>001</Sno>
+        <Sname>张三</Sname>
+        <SClass>0001</SClass>
+    </student>
+
+    <student id="001" sex="男" birth="2000.1.1">
+        <Sno>001</Sno>
+        <Sname>张三</Sname>
+        <SClass>0001</SClass>
+    </student>
+
+</StudentSet>

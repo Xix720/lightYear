@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh"  xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>角色添加 - 光年(Light Year Admin)后台管理系统模板</title>
+  <template th:replace="/admin/common/header"/>
+</head>
+  
+<body style="background-image: url('/images/homebackground4.jpg'); background-size: cover;" >
+<div class="lyear-layout-web">
+  <div class="lyear-layout-container">
+    <!--左侧导航-->
+    <template th:replace="/admin/common/left-menu" />
+    <!--End 左侧导航-->
+    
+    <!--头部信息-->
+    <template th:replace="/admin/common/header-info"/>
+    <!--End 头部信息-->
+    
+    <!--页面主要内容-->
+    <main class="lyear-layout-content">
+      
+      <div class="container-fluid">
+        
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-header"><h4>设置权限</h4></div>
+              <div class="card-body">
+                
+                <form action="#!" method="post" id="role-edit-form">
+                  <input type="hidden" name="role.id" th:value="${roleAuthorityVO.role.id}" />
+                  <input type="hidden" name="role.createTime" th:value="${roleAuthorityVO.role.createTime}" />
+                  <div class="form-group">
+                    <label for="roleName">角色名称</label>
+                    <input class="form-control required" id="roleName" type="text" name="role.name" placeholder="角色名称"
+                           th:value="${roleAuthorityVO.role.name}">
+                  </div>
+                  <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>
+                          <label class="lyear-checkbox checkbox-primary">
+                            <input name="checkbox" type="checkbox" id="check-all">
+                            <span> 全选</span>
+                          </label>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:each="menuLevel1: ${menuGroup.get(0L)}">
+                      <tr>
+                        <td>
+                          <label class="lyear-checkbox checkbox-primary">
+                            <input name="authorityId" type="checkbox" class="checkbox-parent"
+                                   th:checked="${roleAuthorityVO.authorityId.contains(menuLevel1.id)}"
+                                   th:id="'id-'+${menuLevel1.id}" th:value="${menuLevel1.id}">
+                            <span th:text="${menuLevel1.name}"></span>
+                          </label>
+                        </td>
+                      </tr>
+                      <th:block th:each="menuLevel2 : ${menuGroup.get(menuLevel1.id)}">
+                      <tr>
+                        <td class="p-l-20">
+                          <label class="lyear-checkbox checkbox-primary">
+                            <input name="authorityId" type="checkbox" class="checkbox-parent checkbox-child"
+                                   th:checked="${roleAuthorityVO.authorityId.contains(menuLevel2.id)}"
+                                   th:id="'id-'+ ${menuLevel1.id} +'-'+${menuLevel2.id}" th:value="${menuLevel2.id}">
+                            <span th:text="${menuLevel2.name}"></span>
+                          </label>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="p-l-40">
+                          <label class="lyear-checkbox checkbox-primary checkbox-inline" th:each="menuLevel3: ${menuGroup.get(menuLevel2.id)}">
+                            <input name="authorityId" type="checkbox" class="checkbox-child"
+                                   th:checked="${roleAuthorityVO.authorityId.contains(menuLevel3.id)}"
+                                   th:id="'id-'+ ${menuLevel1.id} +'-'+${menuLevel2.id} +'-' + ${menuLevel3.id}" th:value="${menuLevel3.id}">
+                            <span th:text="${menuLevel3.name}"></span>
+                          </label>
+                        </td>
+                      </tr>
+                      </th:block>
+                    </th:block>
+                    </tbody>
+                  </table>
+                </div>
+
+                  <div class="input-group form-group">
+                    状态：
+                    <label class="lyear-radio radio-inline radio-primary">
+                      <input type="radio" name="role.status" value="1" th:checked="${roleAuthorityVO.role.status}">
+                      <span>启用</span>
+                    </label>
+                    <label class="lyear-radio radio-inline radio-primary">
+                      <input type="radio" name="role.status" value="0" th:checked="! ${roleAuthorityVO.role.status}">
+                      <span>不启用</span>
+                    </label>
+                  </div>
+                  <div class="input-group form-group">
+                    <span class="input-group-addon">备注</span>
+                    <input type="text" class="form-control" id="remark" name="role.remark" th:value="${roleAuthorityVO.role.remark}" />
+                  </div>
+
+                  <div class="form-group">
+                    <button type="button" class="btn btn-primary m-r-5ajax-post" id="edit-form-submit-btn">确 定</button>
+                    <button type="button" class="btn btn-default" onclick="javascript:history.back(-1);return false;">返 回</button>
+                  </div>
+
+                </form>
+                
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+      
+    </main>
+    <!--End 页面主要内容-->
+  </div>
+</div>
+
+<template th:replace="/admin/common/footer"/>
+<script type="text/javascript" src="/js/main.min.js"></script>
+
+<script type="text/javascript" src="/js/chosen.jquery.min.js"></script>
+<script type="text/javascript">
+$(function(){
+    //动态选择框，上下级选中状态变化
+    $('input.checkbox-parent').on('change', function(){
+        var id = $(this).attr("id");
+        $('input[id^=' + id + '-]').prop('checked', $(this).is(':checked'));
+    });
+    $('input.checkbox-child').on('change', function(){
+        var id = $(this).attr("id");
+            id = id.substring(0, id.lastIndexOf("-"));
+        var parent = $('input[id=' + id + ']');
+        if($(this).is(':checked')){
+            parent.prop('checked', true);
+            //循环到顶级
+            while(id.lastIndexOf("-") != 2){
+                id = id.substring(0, id.lastIndexOf("-"));
+                parent = $('input[id=' + id + ']');
+                parent.prop('checked', true);
+            }
+        }else{
+            //父级
+            if($('input[id^=' + id + '-]:checked').length == 0){
+                parent.prop('checked', false);
+                //循环到顶级
+                while(id.lastIndexOf("-") != 2){
+                    id = id.substring(0, id.lastIndexOf("-"));
+                    parent = $('input[id=' + id + ']');
+                    if($('input[id^=' + id + '-]:checked').length == 0){
+                        parent.prop('checked', false);
+                    }
+                }
+            }
+        }
+    });
+});
+
+//提交按钮监听事件
+$("#edit-form-submit-btn").click(function(){
+  if(!checkForm("role-edit-form")){
+    return;
+  }
+  var data = $("#role-edit-form").serialize();
+  $.ajax({
+    url:'/role/edit',
+    type:'POST',
+    data:data,
+    dataType:'json',
+    success:function(data){
+      if(data.code == 0){
+        showSuccessMsg('角色修改成功!',function(){
+          window.location.href = '/role/list';
+        })
+      }else{
+        showErrorMsg(data.msg);
+      }
+    },
+    error:function(data){
+      alert('网络错误!');
+    }
+  });
+});
+</script>
+</body>
+</html>

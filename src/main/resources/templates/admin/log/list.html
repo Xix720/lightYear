@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>日志管理 - 光年(Light Year Admin)后台管理系统模板</title>
+<template th:replace="/admin/common/header"/>
+</head>
+  
+<body style="background-image: url('/images/homebackground4.jpg'); background-size: cover;">
+<div class="lyear-layout-web">
+  <div class="lyear-layout-container">
+    <!--左侧导航-->
+    <template th:replace="/admin/common/left-menu" />
+    <!--End 左侧导航-->
+    
+    <!--头部信息-->
+    <template th:replace="/admin/common/header-info"/>
+    <!--End 头部信息-->
+    
+    <!--页面主要内容-->
+    <main class="lyear-layout-content">
+      
+      <div class="container-fluid">
+        
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card">
+              <div class="card-toolbar clearfix">
+                <button class="btn btn-primary m-r-5" id="log_delete"><i class="mdi mdi-delete"></i> 清空所选</button>
+                <button class="btn btn-primary m-r-5" id="deleteAll"><i class="mdi mdi-delete"></i>清空所有日志</button>
+                <form class="pull-right search-bar" method="get" action="#!" role="form">
+                  <div class="input-group">
+                    <div class="input-group-btn">
+                      <input type="hidden" name="search_field" id="search-field" value="title">
+                      <button class="btn btn-default dropdown-toggle" id="search-btn" data-toggle="dropdown" type="button" aria-haspopup="true" aria-expanded="false">
+                      名称 <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li> <a tabindex="-1" href="javascript:void(0)" data-field="title">名称</a> </li>
+                      </ul>
+                    </div>
+                    <input type="text" class="form-control" value="" name="keyword" placeholder="请输入名称">
+                  </div>
+                </form>
+              </div>
+              <div class="card-body">
+                
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>操作人</th>
+                        <th>操作内容</th>
+                        <th>操作时间</th>
+                        <th>管理</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr th:each="operatorLog,stat : ${logPage.records}">
+                        <td th:text="${stat.count}">编号</td>
+                        <td th:text="${operatorLog.operator}">操作人</td>
+                        <td th:text="${operatorLog.content}">操作内容</td>
+                        <td th:text="${#temporals.format(operatorLog.createTime,'yyyy-MM-dd hh:mm:ss')}">操作时间</td>
+                        <td>
+                          <input type="checkbox" style="margin: 0 auto" th:value="${operatorLog.id}">
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                  <ul class="pagination" >
+<!--                    <li th:class="${logPage.current == 1 ? 'disabled':''}">-->
+<!--                      <span>-->
+<!--                      <a th:href="${'/log/list?current='+(logPage.current-1)}"-->
+<!--                         th:style="${logPage.current == 1 ? 'pointer-events: none' : ''}">«</a>-->
+<!--                      </span>-->
+<!--                    </li>-->
+
+<!--                    <th:block th:each="i : ${#numbers.sequence(1, logPage.getPages()>=7 ? 7 : logPage.getPages() )}" >-->
+<!--                      <li th:class="${logPage.current == i ? 'active':''}">-->
+<!--                        <a th:href="${'/log/list?current='+i}" th:text="${i}"></a>-->
+<!--                      </li>-->
+<!--                    </th:block>-->
+
+<!--                    <li class="disabled" th:if="${logPage.getPages() > 7 }"><span>...</span></li>-->
+
+<!--                    <th:block th:each="i : ${#numbers.sequence(logPage.getPages()-2, logPage.getPages() )}" >-->
+<!--                      <li th:class="${logPage.current == i ? 'active':''}">-->
+<!--                        <a th:href="${'/log/list?current='+i}" th:text="${i}"></a>-->
+<!--                      </li>-->
+<!--                    </th:block>-->
+
+<!--                    <li th:class="${logPage.current == logPage.getPages() ? 'disabled':''}"><span>-->
+<!--                      <a th:href="${'/log/list?current='+(logPage.current+1)}"-->
+<!--                         th:style="${logPage.current == logPage.getPages() ? 'pointer-events: none' : ''}">»</a>-->
+<!--                    </span></li>-->
+                  </ul>
+
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+      
+    </main>
+    <!--End 页面主要内容-->
+  </div>
+</div>
+
+<template th:replace="/admin/common/footer"/>
+
+<script type="text/javascript" src="/js/main.min.js"></script>
+<script type="text/javascript" th:inline="javascript">
+  let logPage = /*[[${logPage}]]*/ ;
+  let current = logPage.current;
+  let pages = logPage.pages;
+  let records = logPage.records;
+
+  if(current == 1){
+    $(".pagination").append("<li class='disabled'><span>«</span></li>");
+  }
+  else{
+    $(".pagination").append("<li><a href='/log/list?current="+(current-1)+"'>«</a></li>");
+  }
+
+  if (pages<=10 || current < 7){
+    for (i = 1; i <= pages; i++) {
+      if(i>7 && i< pages-2) {
+        $(".pagination").append("<li><span>...</span></li>");
+        i = pages - 2;
+        continue;
+      }
+      if (current == i) {
+        $(".pagination").append("<li class='active'><a href='/log/list?current=" + i + "'>" + i + "</a></li>");
+        continue;
+      }
+      $(".pagination").append("<li><a href='/log/list?current=" + i + "'>" + i + "</a></li>");
+    }
+  }else if(current >= pages-9){
+    for (i = pages-9; i <= pages; i++) {
+      if (current == i) {
+        $(".pagination").append("<li class='active'><a href='/log/list?current=" + i + "'>" + i + "</a></li>");
+        continue;
+      }
+      $(".pagination").append("<li><a href='/log/list?current=" + i + "'>" + i + "</a></li>");
+    }
+  }else{
+    for (i = current-5; i <= current+1; i++) {
+      if (current == i) {
+        $(".pagination").append("<li class='active'><a href='/log/list?current=" + i + "'>" + i + "</a></li>");
+        continue;
+      }
+      $(".pagination").append("<li><a href='/log/list?current=" + i + "'>" + i + "</a></li>");
+    }
+    $(".pagination").append("<li><span>...</span></li>");
+    $(".pagination").append("<li><a href='/log/list?current=" + (pages-1) + "'>" + (pages-1) + "</a></li>");
+    $(".pagination").append("<li><a href='/log/list?current=" + pages + "'>" + pages + "</a></li>");
+  }
+
+  if(current == pages){
+    $(".pagination").append("<li class='disabled'><span>»</span></li>");
+  }
+  else{
+    $(".pagination").append("<li><a href='/log/list?current="+(current+1)+"'>»</a></li>");
+  }
+
+  //删除选中的日志
+    $("#log_delete").click(function(){
+      let ids = [];//存放选中的id
+      //询问是否删除
+        if(confirm("确定删除选中的日志？")) {
+          $("input[type='checkbox']:checked").each(function () {
+            ids.push($(this).val());
+          });
+          console.log(JSON.stringify(ids));
+          //将数组传给后台
+            $.ajax({
+                url: "/log/delete",
+                type: "post",
+                data: JSON.stringify(ids),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                if (data.code == 0) {
+                    alert("删除成功");
+                    window.location.reload();
+                } else {
+                    alert("删除失败");
+                }
+                }
+            });
+        }
+    });
+
+  //删除所有日志
+    $("#deleteAll").click(function(){
+      //询问是否删除
+        if(confirm("确定删除所有日志？")) {
+          //将数组传给后台
+            $.ajax({
+                url: "/log/delete_all",
+                type: "post",
+                dataType: "json",
+                contentType: "application/json",
+                success: function (data) {
+                if (data.code == 0) {
+                    alert("删除成功");
+                    window.location.reload();
+                } else {
+                    alert("删除失败");
+                }
+                }
+            });
+        }
+    });
+
+
+</script>
+</body>
+</html>

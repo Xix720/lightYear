@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>查看用户信息 - 光年(Light Year Admin)后台管理系统模板</title>
+    <template th:replace="/admin/common/header"/>
+    <style>
+        .accountinfo {
+            float: left;
+        }
+
+        .headpic {
+
+        }
+
+        #basicinfo {
+            height: 220px;
+        }
+    </style>
+</head>
+
+<body style="background-image: url('/images/homebackground4.jpg'); background-size: cover;">
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+        <!--左侧导航-->
+        <template th:replace="/admin/common/left-menu"/>
+        <!--End 左侧导航-->
+
+        <!--头部信息-->
+        <template th:replace="/admin/common/header-info"/>
+        <!--End 头部信息-->
+
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+
+            <div class="container-fluid">
+
+                <div class="row">
+                    <div class="col-lg-12">
+
+
+                        <div class="card" style="float: left;width: 30%;height: 350px">
+                            <div class="card-header bg-primary">
+                                <h4>账号信息</h4>
+                                <ul class="card-actions">
+                                    <li>
+                                        <button type="button"><i class="mdi mdi-more"></i></button>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <br>
+                                账号id：<p th:text="${userinfo.id}" id="user_id"></p>
+                                账号权限：<p th:text="${userinfo.roleId}==4?'普通用户':'管理员'" id="role_id"></p>
+                                创建时间：<p th:text="${userinfo.createTime}" id="createtime"></p>
+                                更新时间：<p th:text="${userinfo.updateTime}" id="updatetime"></p>
+                                帐号状态：<p th:text="${userinfo.status}==1?'已启用':'未启用'" id="status"></p>
+                                <input th:value="${userinfo.password}" type="password" id="password"
+                                       style="visibility:hidden"/>
+                            </div>
+                        </div>
+
+                        <div class="card" style="float: left;width: 70%;padding-left: 20px;height: 350px">
+                            <div class="card-header bg-success">
+                                <h4>头像信息</h4>
+                                <ul class="card-actions">
+                                    <li>
+                                        <button type="button"><i class="mdi mdi-more"></i></button>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <div class="edit-avatar" style="margin-top: 20px">
+                                    <img th:src="@{/images/users/{filename}(filename=${userinfo.headPic})}"
+                                         width="100px" id="headpic">
+                                    <div class="avatar-divider"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header bg-cyan">
+                                <h4>详细资料</h4>
+                                <ul class="card-actions">
+                                    <li>
+                                        <button type="button"><i class="mdi mdi-more"></i></button>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body">
+                                <form method="post" action="/user/edit" class="site-form">
+                                    <div class="form-group">
+                                        <label for="username">用户名</label>
+                                        <input type="text" class="form-control" name="username" id="username"
+                                               th:value="${userinfo.username}" disabled="disabled"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="phone">联系电话</label>
+                                        <input type="text" class="form-control" name="phone" id="phone" placeholder="输入您的电话"
+                                               th:value="${userinfo.mobile}" disabled="disabled">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="email">邮箱</label>
+                                        <input type="email" class="form-control" name="email" id="email"
+                                               aria-describedby="emailHelp" placeholder="请输入邮箱地址"
+                                               th:value="${userinfo.email}" disabled="disabled">
+                                    </div>
+                                    <div class="example-box">
+                                        <label for="sex">性别</label>
+                                        <input type="text" class="form-control" name="sex" id="sex"
+                                               aria-describedby="emailHelp" placeholder="请输入性别"
+                                               th:value="${userinfo.sex}==1?'男':'女'" disabled="disabled">
+                                    </div>
+                                    <br>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+<template th:replace="/admin/common/footer"/>
+<script type="text/javascript" src="/js/main.min.js"></script>
+
+<script type="text/javascript" src="/js/chosen.jquery.min.js"></script>
+<script>
+</script>
+</body>
+</html>

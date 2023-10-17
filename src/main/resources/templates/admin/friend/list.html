@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <title>用户管理 - 光年(Light Year Admin)后台管理系统模板</title>
+    <template th:replace="/admin/common/header"/>
+</head>
+
+<body style="background-image: url('/images/homebackground4.jpg'); background-size: cover;">
+<div class="lyear-layout-web">
+    <div class="lyear-layout-container">
+        <!--左侧导航-->
+        <template th:replace="/admin/common/left-menu"/>
+        <!--End 左侧导航-->
+
+        <!--头部信息-->
+        <template th:replace="/admin/common/header-info"/>
+        <!--End 头部信息-->
+
+        <!--页面主要内容-->
+        <main class="lyear-layout-content">
+            <div class="container-fluid">
+                <div class="col-sm-6 col-lg-3" th:each="Friend,stat :${FriendPage.records}">
+                    <div class="card">
+                        <div class="card-header bg-primary">
+                            <h4 th:text="${Friend.getFriendId()}" th:id="'friendid'+${Friend.getFriendId()}"></h4>
+                            <ul class="card-actions">
+                                <li>
+                                    <a class="btn btn-xs btn-default" title="删除" th:onclick="'showDelConfirmDialog('+${Friend.friendId}+',delSubmit)'" data-toggle="tooltip" id="delete"><i class="mdi mdi-window-close"></i></a>
+                                </li>
+                                <li>
+                                    <a class="btn btn-xs btn-default" title="详情" th:href="'/friend/info/'+${Friend.friendId}" data-toggle="tooltip"><i class="mdi mdi-account-star"></i></a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-body">
+                            <img class="img-avatar img-avatar-48 m-r-10" src="/images/users/avatar.jpg" alt="admin">
+                            <span class="text-muted" th:text="${Friend.friendName}" style="font-size: 25px"></span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <ul class="pagination">
+
+                    </ul>
+                    <div class="toolbar-btn-action">
+                        <a class="btn btn-primary m-r-5" href="/friend/add"><i class="mdi mdi-plus"></i> 添加黑名单用户</a>
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+        <!--End 页面主要内容-->
+    </div>
+</div>
+
+<template th:replace="/admin/common/footer"/>
+
+<script type="text/javascript" src="/js/main.min.js"></script>
+<script type="text/javascript"></script>
+<script th:inline="javascript">
+
+
+    let fridenPage = /*[[${FriendPage}]]*/;
+    let current = fridenPage.current;
+    let pages = fridenPage.pages;
+    let records = fridenPage.records;
+
+    if (current == 1) {
+        $(".pagination").append("<li class='disabled'><span>«</span></li>");
+    } else {
+        $(".pagination").append("<li><a href='/friend/list?current=" + (current - 1) + "'>«</a></li>");
+    }
+
+    if (pages <= 10 || current < 7) {
+        for (i = 1; i <= pages; i++) {
+            if (i > 7 && i < pages - 2) {
+                $(".pagination").append("<li><span>...</span></li>");
+                i = pages - 2;
+                continue;
+            }
+            if (current == i) {
+                $(".pagination").append("<li class='active'><a href='/friend/list?current=" + i + "'>" + i + "</a></li>");
+                continue;
+            }
+            $(".pagination").append("<li><a href='/friend/list?current=" + i + "'>" + i + "</a></li>");
+        }
+    } else if (current >= pages - 9) {
+        for (i = pages - 9; i <= pages; i++) {
+            if (current == i) {
+                $(".pagination").append("<li class='active'><a href='/friend/list?current=" + i + "'>" + i + "</a></li>");
+                continue;
+            }
+            $(".pagination").append("<li><a href='/friend/list?current=" + i + "'>" + i + "</a></li>");
+        }
+    } else {
+        for (i = current - 5; i <= current + 1; i++) {
+            if (current == i) {
+                $(".pagination").append("<li class='active'><a href='/user/list?current=" + i + "'>" + i + "</a></li>");
+                continue;
+            }
+            $(".pagination").append("<li><a href='/friend/list?current=" + i + "'>" + i + "</a></li>");
+        }
+        $(".pagination").append("<li><span>...</span></li>");
+        $(".pagination").append("<li><a href='/friend/list?current=" + (pages - 1) + "'>" + (pages - 1) + "</a></li>");
+        $(".pagination").append("<li><a href='/friend/list?current=" + pages + "'>" + pages + "</a></li>");
+    }
+
+    if (current == pages) {
+        $(".pagination").append("<li class='disabled'><span>»</span></li>");
+    } else {
+        $(".pagination").append("<li><a href='/friend/list?current=" + (current + 1) + "'>»</a></li>");
+    }
+
+    //删除
+    $("#delete").click(function () {
+        let friendId = $(this).parent().parent().parent().find("h4").text();
+        let that = $(this);
+        $.ajax({
+            url: "/friend/delete",
+            type: "post",
+            data: {
+                friendId: friendId
+            },
+            success: function (data) {
+                if (data.code == 0) {
+                    //显示加载动画0.5秒
+                    setTimeout(function () {
+                        lightyear.loading('hide');
+                    }, 1000);
+                    lightyear.notify('删除成功', 'success', 5000, 'mdi mdi-emoticon-happy', 'top', 'center');
+                    //1s后跳转到列表页面
+                    setTimeout(function () {
+                        window.location.href = '/friend/list';
+                    }, 1000);
+
+                } else {
+                    //显示加载动画0.5秒
+                    setTimeout(function () {
+                        lightyear.loading('hide');
+                        lightyear.notify('删除失败', 'danger', 5000);
+                    }, 500);
+
+                }
+            }
+        });
+    });
+
+    //删除对应id的用户
+    function delSubmit(id){
+        $.ajax({
+            url:'/friend/delete',
+            type:'POST',
+            data:{"id":id},
+            dataType:'json',
+            success:function(data){
+                if(data.code == 0){
+                    showSuccessMsg('删除成功!',function(){
+                        window.location.href = '/friend/list';
+                    })
+                }else{
+                    showErrorMsg(data.msg);
+                }
+            },
+            error:function(data){
+                alert('未知错误!');
+            }
+        });
+    }
+
+
+</script>
+</body>
+</html>

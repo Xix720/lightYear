@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.springbootplus.mapper.FriendMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.example.springbootplus.entity.Friend">
+        <id column="adderId" property="adderId" />
+        <result column="friendId" property="friendId" />
+        <result column="friendname" property="friendname" />
+        <result column="friend_headpic" property="friend_headpic" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        adderId, friendId, friendname, friend_headpic
+    </sql>
+
+   <delete id="deleteFriend" parameterType="Long">
+       delete from friend where friendId = #{friendId}
+   </delete>
+
+
+
+</mapper>
